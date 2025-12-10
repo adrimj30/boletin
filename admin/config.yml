@@ -1,0 +1,44 @@
+backend:
+  name: git-gateway
+
+local_backend: false
+
+media_folder: "pdfs"
+public_folder: "/pdfs"
+
+site_url: "/"
+
+collections:
+  - name: "resultados"
+    label: "Resultados"
+    description: "Gestión de resultados por categoría"
+    files:
+      - file: "data/resultados.json"
+        label: "Todas las categorías"
+        name: "todas"
+        format: "json"
+        fields:
+          - label: "Infantiles"
+            name: "infantiles"
+            widget: "list"
+            fields:
+              - { label: "Título", name: "title", widget: "string" }
+              - { label: "PDF", name: "pdf", widget: "file", allow_multiple: false }
+          - label: "Alevín"
+            name: "alevin"
+            widget: "list"
+            fields:
+              - { label: "Título", name: "title", widget: "string" }
+              - { label: "PDF", name: "pdf", widget: "file", allow_multiple: false }
+          - label: "Juvenil"
+            name: "juvenil"
+            widget: "list"
+            fields:
+              - { label: "Título", name: "title", widget: "string" }
+              - { label: "PDF", name: "pdf", widget: "file", allow_multiple: false }
+          - label: "Adultos"
+            name: "adultos"
+            widget: "list"
+            fields:
+              - { label: "Título", name: "title", widget: "string" }
+              - { label: "PDF", name: "pdf", widget: "file", allow_multiple: false }
