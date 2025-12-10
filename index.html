@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hipicas Jonicio</title>
+  <style>
+    /* Fuente y colores base */
+    body {
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      background: #f9fafb;
+      color: #333;
+    }
+    header {
+      background: #1f2937;
+      color: #fff;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    h1 { margin: 0; font-size: 22px; letter-spacing: 1px; }
+    /* Login minimalista */
+    .login input {
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-left: 5px;
+      font-size: 14px;
+    }
+    .login button {
+      padding: 6px 12px;
+      margin-left: 5px;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .login button:hover { background: #2563eb; }
+    /* Tabs estilo pill */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background: #e5e7eb;
+      padding: 10px;
+      gap: 10px;
+    }
+    .tabs button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      background: #d1d5db;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .tabs button.active {
+      background: #3b82f6;
+      color: #fff;
+      font-weight: 600;
+    }
+    .tabs button:hover { background: #9ca3af; }
+    /* Contenido */
+    .tab-content {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .result-item {
+      margin: 10px 0;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .result-item a {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+    .result-item a:hover { text-decoration: underline; }
+    /* Formulario añadir */
+    .add-form {
+      margin-top: 15px;
+      padding: 15px;
+      border: 1px dashed #ccc;
+      border-radius: 10px;
+      background: #f9fafb;
+    }
+    .add-form input {
+      margin: 5px 0;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+    }
+    .add-form button {
+      margin-top: 10px;
+      padding: 8px 14px;
+      background: #10b981;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .add-form button:hover { background: #059669; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Boletin Hipico</h1>
+    <div class="login" id="loginPanel">
+      <input type="text" id="user" placeholder="Usuario">
+      <input type="password" id="pass" placeholder="Contraseña">
+      <button onclick="login()">Entrar</button>
+    </div>
+    <div class="login" id="logoutPanel" style="display:none;">
+      <span>Admin conectado</span>
+      <button onclick="logout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('infantiles')">Infantiles</button>
+    <button class="tab-btn" onclick="showTab('alevin')">Alevín</button>
+    <button class="tab-btn" onclick="showTab('juvenil')">Juvenil</button>
+    <button class="tab-btn" onclick="showTab('adultos')">Adultos</button>
+  </div>
+
+  <div id="infantiles" class="tab-content"></div>
+  <div id="alevin" class="tab-content" style="display:none;"></div>
+  <div id="juvenil" class="tab-content" style="display:none;"></div>
+  <div id="adultos" class="tab-content" style="display:none;"></div>
+
+  <script>
+    let loggedIn = false;
+    const categories = { infantiles: [], alevin: [], juvenil: [], adultos: [] };
+
+    function showTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(div => div.style.display='none');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tab).style.display='block';
+      event.target.classList.add('active');
+      renderCategory(tab);
+    }
+    function login() {
+      const u = document.getElementById("user").value;
+      const p = document.getElementById("pass").value;
+      if(u==="administrador" && p==="admin"){
+        loggedIn = true;
+        document.getElementById("loginPanel").style.display="none";
+        document.getElementById("logoutPanel").style.display="block";
+        renderCategory("infantiles");
+      } else { alert("Credenciales incorrectas"); }
+    }
+    function logout() {
+      loggedIn = false;
+      document.getElementById("loginPanel").style.display="block";
+      document.getElementById("logoutPanel").style.display="none";
+      renderCategory("infantiles");
+    }
+    function renderCategory(tab) {
+      const container = document.getElementById(tab);
+      container.innerHTML = "";
+      categories[tab].forEach(item => {
+        const div = document.createElement("div");
+        div.className="result-item";
+        div.innerHTML = `<strong>${item.title}</strong> - <a href="${item.url}" download>${item.fileName}</a>`;
+        container.appendChild(div);
+      });
+      if(loggedIn){
+        const form = document.createElement("div");
+        form.className="add-form";
+        form.innerHTML = `
+          <input type="text" id="title-${tab}" placeholder="Título del resultado">
+          <input type="file" id="file-${tab}" accept="application/pdf">
+          <button onclick="addResult('${tab}')">Añadir resultado +</button>
+        `;
+        container.appendChild(form);
+      }
+    }
+    function addResult(tab) {
+      const title = document.getElementById("title-"+tab).value;
+      const fileInput = document.getElementById("file-"+tab);
+      const file = fileInput.files[0];
+      if(!title || !file){ alert("Completa título y archivo PDF"); return; }
+      const url = URL.createObjectURL(file);
+      categories[tab].push({title, fileName:file.name, url});
+      renderCategory(tab);
+    }
+    renderCategory("infantiles");
+  </script>
+</body>
+</html>
