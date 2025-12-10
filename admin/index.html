@@ -9,4 +9,29 @@
 <body>
   <!-- Decap CMS se monta aquí automáticamente -->
 </body>
+  <script>
+  async function cargarResultados() {
+    const res = await fetch('/data/resultados.json', { cache: 'no-store' });
+    const data = await res.json();
+
+    function renderCategoria(id, items) {
+      const cont = document.getElementById(id);
+      if (!cont) return;
+      cont.innerHTML = '';
+      (items || []).forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'result-item';
+        div.innerHTML = `<strong>${item.title}</strong> — <a href="${item.pdf}" target="_blank" rel="noopener">Ver PDF</a>`;
+        cont.appendChild(div);
+      });
+    }
+
+    renderCategoria('infantiles', data.infantiles);
+    renderCategoria('alevin', data.alevin);
+    renderCategoria('juvenil', data.juvenil);
+    renderCategoria('adultos', data.adultos);
+  }
+  cargarResultados();
+</script>
+
 </html>
